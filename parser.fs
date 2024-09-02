@@ -39,7 +39,7 @@ let Operator = choice[
 let Function =
     (pstring "fun" >>. spaces >>. Name) .>>. 
     (skipChar '(' >>. spaces  >>. many Name .>> skipChar ')') .>>. 
-    (spaces >>. skipChar '=' >>. spaces >>. skipChar '{' >>. spaces >>. many Parse .>> spaces .>> skipChar '}' .>> spaces) .>>. 
+    (spaces >>. skipChar '{' >>. spaces >>. many Parse .>> spaces .>> skipChar '}' .>> spaces) .>>. 
     (many Parse .>> spaces) |>> 
         fun(((Var(func), params), body), expr_list) -> 
             // printfn "%A" expr_list
@@ -54,7 +54,7 @@ let Function =
 let FunctionRec =
     (pstring "rec fun" >>. spaces >>. Name) .>>. 
     (skipChar '(' >>. spaces  >>. many Name .>> skipChar ')') .>>. 
-    (spaces >>. skipChar '=' >>. spaces >>. skipChar '{' >>. spaces >>. many Parse .>> spaces .>> skipChar '}' .>> spaces) .>>. 
+    (spaces >>. skipChar '{' >>. spaces >>. many Parse .>> spaces .>> skipChar '}' .>> spaces) .>>. 
     (many Parse .>> spaces) |>> 
         fun(((Var(func), params), body), expr_list) -> 
             // printfn "%A" expr_list
@@ -77,7 +77,7 @@ let ParseList =
 
 let FunCall =
     Name .>>. 
-    (spaces >>. skipChar '(' >>. spaces >>. many (ParseFloat <|> Name .>> spaces) .>> skipChar ')' .>> spaces) |>>
+    (spaces >>. skipChar '(' >>. spaces >>. many Parse .>> spaces .>> skipChar ')' .>> spaces) |>>
         fun(func, arg) -> App(func, List(arg))
 
 let Operation = 
@@ -95,9 +95,9 @@ let Cond =
     fun ((cond, res), alt) -> Cond(cond, Prog(res), Prog(alt))
 
 let ParsePrint =
-    pstring "print" >>. spaces >>. Parse .>> spaces |>> fun(arg) -> Print(arg)
+    pstring "print" >>. spaces >>. skipChar '(' >>. spaces >>. Parse .>> spaces .>> skipChar ')' .>> spaces |>> fun(arg) -> Print(arg)
 
-ParseRef := choice[FunctionRec; Function; ParsePrint; Cond; Var;  attempt Operation; attempt FunCall; ParseList; ParseFloat; ParseBool; Name;]
+ParseRef := choice[FunctionRec; Function; ParsePrint; Cond; attempt Operation;  attempt FunCall; Var;ParseList; ParseFloat; ParseBool; Name;]
 
 let final = spaces >>. many Parse .>> eof |>> Prog
 

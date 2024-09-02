@@ -91,7 +91,8 @@ module Interpreter =
             eval e2 (Map.add id (RClosure(e1, env, id)) env)
         | Lam(param,body) -> Closure(exp, env)
         | Closure(exp, env) -> exp
-        | Prog(exp_list) -> Prog(exp_list |> List.map(fun x -> eval x env))
+        | Prog(exp_list) -> 
+            exp_list |> List.map(fun x -> eval x env) |> List.last
         | Print(x) -> 
             match x with
                 | Float(n) -> 
