@@ -41,13 +41,29 @@ module Interpreter =
     | ">=" -> 2
     | "<=" -> 2
 
+    | "[]" -> 2 
+    | "front" -> 1
+    | "back" -> 1
+    | "append" -> 2
+
+
     let Operation = function
+    | "[]" -> function
+        | [List(list);Int(n)] -> list.[n] 
+    | "front" -> function
+        | [List(list)] -> (List.head list)
+    | "back" -> function
+        | [List(list)] -> (List.last list)
+    | "append" -> function
+        | [List(list);x] -> List(list@[x]) 
+        
     | "&" -> function 
         | [Bool(a);Bool(b)] -> Bool(a&&b)
     | "|" -> function 
         | [Bool(a);Bool(b)] -> Bool(a||b)
     | "not" -> function 
         | [Bool(a)] -> Bool(not a)
+
     | "+" -> function 
         | [Float(a);Float(b)] -> Float(a+b)
     | "-" -> function 
@@ -76,8 +92,7 @@ module Interpreter =
         | Bool(n) -> Bool(n)
         | Int(n) -> Int(n)
         | Float(n) -> Float(n)
-        | List(n) ->
-            List(List.map(fun x -> eval x env) n)
+        | List(n) -> List(List.map(fun x -> eval x env) n)
         | Var(x) -> Map.find x env
         | PrimitiveOperation(f) -> Op(f, ArgsNum f, [])
         | Cond(cond, yes, no) ->
@@ -91,14 +106,21 @@ module Interpreter =
         | Lam(param,body) -> Closure(exp, env)
         | Closure(exp, env) -> exp
         | Prog(exp_list) -> 
-            exp_list |> List.map(fun x -> eval x env) |> List.last
+            if (List.isEmpty exp_list) then None
+            else exp_list |> List.map(fun x -> eval x env) |> List.last
         | Print(x) -> 
             let res = eval x env
             match res with
                 | Float(n) -> 
                     printfn "%A" n
                     None
+                | Int(n) ->
+                    printfn "%A" n  
+                    None
                 | Bool(n) -> 
+                    printfn "%A" n
+                    None
+                | List(n) ->
                     printfn "%A" n
                     None
                 | _ -> 

@@ -88,7 +88,24 @@ module Parser =
             fun ((e1, op), e2) -> 
                 App(App(PrimitiveOperation(op),  e1),  e2)
 
+
+
+    let IndexList = 
+        Name .>>.
+        (spaces >>. skipChar '[' >>. spaces >>. pint32 .>> spaces .>> skipChar ']' .>> spaces) |>>
+            fun(list, num) -> 
+                App(App(PrimitiveOperation("[]"), list), Int(num))
     
+
+
+    let Method = 
+        Name .>> spaces .>>.
+        (skipChar '.' >>. Name .>> spaces) .>>.
+        (skipChar '(' >>. many Parse .>> spaces .>> skipChar ')' .>> spaces) |>>
+            fun((list, Var(method)), args) -> 
+                let acc = App(PrimitiveOperation(method), list)
+                List.fold (fun acc x -> App(acc, x)) acc args 
+            
 
     let Cond =
         (pstring "if" >>. spaces >>. Parse .>> spaces) .>>.
@@ -97,9 +114,9 @@ module Parser =
         fun ((cond, res), alt) -> Cond(cond, Prog(res), Prog(alt))
 
     let ParsePrint =
-        pstring "print" >>. spaces >>. skipChar '(' >>. spaces >>. Parse .>> spaces .>> skipChar ')' .>> spaces |>> fun(arg) -> Print(arg)
+        pstring "print" >>. spaces >>. skipChar '(' >>. spaces >>. many Parse .>> spaces .>> skipChar ')' .>> spaces |>> fun(arg) -> Print(Prog(arg))
 
-    ParseRef := choice[FunctionRec; Function; ParsePrint; Cond; attempt Operation;  attempt FunCall; Var;ParseList; ParseFloat; ParseBool; Name;]
+    ParseRef := choice[FunctionRec; Function; ParsePrint; Cond; attempt Operation;  attempt FunCall; attempt IndexList; attempt Method; Var; ParseList; ParseFloat; ParseBool; Name;]
 
     let final = spaces >>. many Parse .>> eof |>> Prog
 
@@ -118,7 +135,7 @@ module Parser =
 [<EntryPoint>]
 let main argv =
     if argv.Length <> 1 then
-        printfn "ERROR: one argument required"
+        printfn "ERROR: please provide one argument - name of the file containing the code"
     else
         let filename = argv.[0]
         
