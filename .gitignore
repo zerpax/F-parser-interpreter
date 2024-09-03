@@ -1,0 +1,34 @@
+# Бинарные файлы и артефакты сборки
+bin/
+obj/
+out/
+*.dll
+*.exe
+*.pdb
+*.nuget
+*.log
+*.cache
+*.ide
+*.user
+*.suo
+*.userprefs
+
+# Пакеты NuGet
+packages/
+**/packages/*
+!**/packages/build/
+!**/packages/repositories.config
+
+# Конфигурационные файлы для IDE
+.vscode/
+.idea/
+*.sln.ide/
+*.vscode/
+
+# Файлы временной и служебной информации
+*.tmp
+*.temp
+*.pid
+*.pid.lock
+*.swp
+

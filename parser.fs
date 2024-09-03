@@ -110,15 +110,28 @@ let readFile filePath =
     | ex ->
         failwithf "An error occurred while reading the file: %s" ex.Message
 
-let ParseFile =
-    let file = readFile "test"
+let ParseFile filePath =
+    let file = readFile filePath
     match run final file with
-        | Success(result,_,_) -> 
-            printfn "%A" result
-            let output = eval result Map.empty
-            printfn "%A" output
-        | Failure(err,_,_) -> printfn "%A" err
+    | Success(result, _, _) ->
+        printfn "%A" result
+        let output = eval result Map.empty
+        printfn "%A" output
+    | Failure(err, _, _) -> printfn "%A" err
 
+[<EntryPoint>]
+let main argv =
+    if argv.Length <> 1 then
+        printfn "ERROR: One argument required, specifying the path to the file."
+        1
+    else
+        let filePath = argv.[0]
+        if File.Exists(filePath) then
+            ParseFile filePath
+            0
+        else
+            printfn "ERROR: File '%s' does not exist." filePath
+            1
 
 
 // [<EntryPoint>]
