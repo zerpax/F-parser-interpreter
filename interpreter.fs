@@ -32,6 +32,7 @@ module Interpreter =
     | "+" -> 2
     | "-" -> 2
     | "*" -> 2
+    | "%" -> 2
     | "/" -> 2
 
     | "=" -> 2
@@ -56,6 +57,8 @@ module Interpreter =
         | [Float(a);Float(b)] -> Float(a*b)
     | "/" -> function 
         | [Float(a);Float(b)] -> Float(a/b)
+    | "%" -> function
+        | [Float(a);Float(b)] -> Float(a % b)
     | ">" -> function 
         | [Float(a);Float(b)] -> Bool(a>b)
     | "<" -> function 

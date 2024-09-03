@@ -26,6 +26,7 @@ let Operator = choice[
                     pstring "-" |>> fun _ -> "-"
                     pstring "*" |>> fun _ -> "*"
                     pstring "/" |>> fun _ -> "/"
+                    pstring "%" |>> fun _ -> "%"
                     pstring "=" |>> fun _ -> "="
                     pstring "!=" |>> fun _ -> "!="
                     pstring ">" |>> fun _ -> ">"
