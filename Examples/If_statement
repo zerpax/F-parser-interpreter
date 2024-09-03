@@ -1,0 +1,8 @@
+var x = 11
+var y = 10
+
+if x < y then {
+    print(1)
+} else {
+    print(0)
+}
