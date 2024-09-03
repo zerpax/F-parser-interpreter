@@ -71,7 +71,6 @@ module Interpreter =
         
 
     let rec eval exp env =
-        let _ = printfn "eval %A where %A" exp env in
         match exp with
         | App(e1,e2) -> apply (eval e1 env) (eval e2 env)
         | Bool(n) -> Bool(n)
@@ -94,7 +93,8 @@ module Interpreter =
         | Prog(exp_list) -> 
             exp_list |> List.map(fun x -> eval x env) |> List.last
         | Print(x) -> 
-            match x with
+            let res = eval x env
+            match res with
                 | Float(n) -> 
                     printfn "%A" n
                     None
@@ -108,7 +108,6 @@ module Interpreter =
             printfn "invalid evaluation"
             exp
     and apply e1 e2 = 
-        let _ = printfn "app (%A) (%A)" e1 e2 in
         match e1 with
         | Closure(Lam(param,body),env) -> 
             match e2 with
